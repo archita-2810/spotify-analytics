@@ -1,6 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@layer utilities{
+  .blob {
+    @apply absolute w-48 h-48 md:w-96 md:h-96 bg-green-300 rounded-full filter blur-xl opacity-70;
+  }
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+  .animation-delay-6000 {
+    animation-delay: 6s;
+  }
+}
 
 :root {
   --background: #ffffff;
