@@ -1,11 +1,15 @@
 import Image from "next/image";
 import Header from "@/components/navbar/header";
+import Hero from "@/components/hero/Hero";
+import Trending from "@/components/trending-section/trending";
 
 export default function Home() {
   return (
     <div className="font-poppins relative min-h-screen flex flex-col overflow-hidden">
       <div className='relative z-20'>
         <Header/>
+        <Hero />
+        <Trending />
       </div>
       <div className="absolute inset-0 overflow-hidden z-0">
         <div className="blob left-[10%] top-[20%] animate-blob animation-delay-2000"></div>

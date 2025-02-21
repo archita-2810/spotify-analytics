@@ -32,7 +32,7 @@ const Header = () => {
       </nav>
 
       <button className="hidden md:block bg-green-500 text-black px-4 py-2 rounded-full font-semibold hover:bg-green-400 transition-all duration-300">
-        Login
+      SignIn
       </button>
 
       <button
@@ -54,7 +54,7 @@ const Header = () => {
             Playlists
           </Link>
           <button className="bg-green-500 text-black px-4 py-2 rounded-full font-semibold hover:bg-green-400 transition-all duration-300 w-full">
-            Login
+            SignIn
           </button>
         </div>
       )}
