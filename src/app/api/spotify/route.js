@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+require('dotenv').config();
 
-const client_id = "2f60491a3952467583ae3d786851aace";
-const client_secret = "278acb46c4874de7a3cfe84e3a2ead11";
+const client_id = process.env.SPOTIFY_CLIENT_ID;
+const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
 
 const getAccessToken = async () => {
   const basic = Buffer.from(`${client_id}:${client_secret}`).toString("base64");
