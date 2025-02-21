@@ -2,6 +2,7 @@ import Image from "next/image";
 import Header from "@/components/navbar/header";
 import Hero from "@/components/hero/Hero";
 import Trending from "@/components/trending-section/trending";
+import Artists from "@/components/trending-section/trending_artists";
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
         <Header/>
         <Hero />
         <Trending />
+        <Artists />
       </div>
       <div className="absolute inset-0 overflow-hidden z-0">
         <div className="blob left-[10%] top-[20%] animate-blob animation-delay-2000"></div>

@@ -7,7 +7,7 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="flex flex-col justify-center items-center text-center px-6 py-10 sm:px-10 lg:px-20 gap-y-8">
+            className="flex flex-col justify-center items-center text-center px-6 md:py-10 py-2 sm:px-10 lg:px-20 gap-y-8">
             <motion.p 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}

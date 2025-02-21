@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 const Trending = () => {
   const [trendingTracks, setTrendingTracks] = useState([]);
@@ -54,14 +55,14 @@ const Trending = () => {
   }, []); 
 
   return (
-    <div className="flex md:flex-col flex-row gap-8 p-4">
+    <div className="flex flex-col gap-8 p-4">
       {loading ? (
         <p className="text-white">Loading...</p>
       ) : (
         <>
           <div className="w-full">
             {/* <h2 className="text-xl font-bold mb-4">🔥 Trending Playlists</h2> */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div className="hidden md:grid grid-cols-2 md:grid-cols-5 gap-4">
               {trendingTracks.map((track, index) => (
                 <div key={index} className="bg-white/10 p-3 rounded-lg">
                   <div className="relative w-full h-40">
@@ -79,6 +80,43 @@ const Trending = () => {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="md:hidden overflow-hidden">
+            <motion.div
+              className="flex gap-4"
+              animate={{ x: ["0%", "-100%"] }}
+              transition={{
+                ease: "linear",
+                duration: 10,
+                repeat: Infinity,
+              }}
+            >
+              {trendingTracks.concat(trendingTracks).map((track, index) => (
+                <div
+                  key={index}
+                  className="bg-white/10 p-3 rounded-lg min-w-[150px]"
+                >
+                  <div className="relative w-32 h-32">
+                    <Image
+                      src={track.image || "/placeholder.jpg"}
+                      alt={track.title}
+                      fill
+                      className="object-cover rounded-md"
+                    />
+                  </div>
+                  <h3 className="text-white text-xs mt-2">{track.title}</h3>
+                  <a
+                    href={track.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-green-400 text-xs hover:text-white"
+                  >
+                    Listen on Spotify
+                  </a>
+                </div>
+              ))}
+            </motion.div>
           </div>
         </>
       )}
