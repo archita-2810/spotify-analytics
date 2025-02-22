@@ -11,7 +11,7 @@ const Artists = () => {
     const fetchTopArtists = async () => {
       try {
         console.log("Fetching Spotify token...");
-        const tokenResponse = await fetch("/api/spotify");
+        const tokenResponse = await fetch("/api/spotify/token");
         const tokenData = await tokenResponse.json();
 
         if (!tokenData || !tokenData.access_token) {

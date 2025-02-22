@@ -3,6 +3,7 @@ import Header from "@/components/navbar/header";
 import Hero from "@/components/hero/Hero";
 import Trending from "@/components/trending-section/trending";
 import Artists from "@/components/trending-section/trending_artists";
+import GenrePopularity from "@/components/trending-section/trending_genre";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
         <Hero />
         <Trending />
         <Artists />
+        <GenrePopularity />
       </div>
       <div className="absolute inset-0 overflow-hidden z-0">
         <div className="blob left-[10%] top-[20%] animate-blob animation-delay-2000"></div>
