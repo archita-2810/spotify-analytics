@@ -9,7 +9,7 @@ const GenrePopularity = () => {
   useEffect(() => {
     const fetchGenreData = async () => {
       try {
-        const tokenResponse = await fetch("/api/spotify/token");
+        const tokenResponse = await fetch("/api/spotify/user-token");
         const tokenData = await tokenResponse.json();
 
         if (!tokenData || !tokenData.access_token) {

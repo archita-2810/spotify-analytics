@@ -1,17 +1,36 @@
 "use client";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
-import useSpotifyAuth from "@/app/hooks/spotifyauth";
-import { auth, provider } from "../../app/lib/firebase";
-import { signInWithPopup, signOut } from "firebase/auth";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useSpotifyAuth();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch("/api/users");
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+
+        const data = await response.json();
+        if (data && data.userId) {
+          const token = await getSpotifyToken(data.userId);
+          setUser({ ...data, token });
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const handleSignIn = async () => {
-    window.location.href = "/api/spotify/login";
+    window.location.href = "/signup";
   };
 
   const handleSignOut = async () => {
@@ -51,9 +70,11 @@ const Header = () => {
 
       {user ? (
         <div className="flex items-center space-x-4">
-          <img
+          <Image
             src={user?.photoURL || "/default-avatar.png"}
             alt="User Avatar"
+            width={40}
+            height={40}
             className="w-10 h-10 rounded-full border border-green-400"
           />
           <button
@@ -69,6 +90,7 @@ const Header = () => {
           className="hidden md:block bg-green-500 text-black px-4 py-2 rounded-full font-semibold hover:bg-green-400 transition-all duration-300"
         >
           SignIn
+          {/* <Link href="/signup">SignIn</Link> */}
         </button>
       )}
 
@@ -112,6 +134,7 @@ const Header = () => {
               className="bg-green-500 text-black px-4 py-2 rounded-full font-semibold hover:bg-green-400 transition-all duration-300 w-full"
             >
               SignIn
+              {/* <Link href="/signup">SignIn</Link> */}
             </button>
           )}
         </div>

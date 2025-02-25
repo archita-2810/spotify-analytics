@@ -1,80 +1,44 @@
-import { useEffect, useState } from "react";
-import { auth, db } from "../lib/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
-import { useRouter } from "next/navigation";
+import connectToMongo from "@/app/lib/mongodb";
+import User from "@/app/models/User";
 
-const useSpotifyAuth = () => {
-  const [token, setToken] = useState(null);
-  const [user, setUser] = useState(null);
-  const router = useRouter();
+export const getSpotifyToken = async (userId) => {
+    connectToMongo();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
-      if (authUser) {
-        setUser(authUser);
-        fetchTokenFromAPI();
-      } else {
-        setUser(null);
-      }
-    });
+    const user = await User.findOne({ spotifyId: userId });
 
-    return () => unsubscribe();
-  }, []);
-
-  const fetchTokenFromAPI = async () => {
-    try {
-      const response = await fetch("/api/spotify/token");
-      const data = await response.json();
-
-      if (!data.access_token) {
-        throw new Error("Failed to fetch Spotify token");
-      }
-
-      setToken(data.access_token);
-      saveTokenToFirestore(data.access_token);
-      fetchUserProfile(data.access_token);
-    } catch (error) {
-      console.error("Error fetching token:", error);
+    if (!user) {
+        throw new Error("User not found in MongoDB");
     }
-  };
 
-  const saveTokenToFirestore = async (accessToken) => {
-    try {
-      const userRef = doc(db, "spotify_users", auth.currentUser.uid);
-      await setDoc(userRef, { access_token: accessToken }, { merge: true });
-      console.log("Token saved to Firestore!");
-    } catch (error) {
-      console.error("Error saving token:", error);
+    if (Date.now() > user.expiresAt) {
+        const newTokenData = await refreshSpotifyToken(user.refreshToken);
+
+        user.accessToken = newTokenData.access_token;
+        user.expiresAt = Date.now() + newTokenData.expires_in * 1000;
+
+        await user.save();
+        return newTokenData.access_token;
     }
-  };
 
-  const fetchUserProfile = async (accessToken) => {
-    if (!accessToken) return;
-
-    try {
-      const response = await fetch("https://api.spotify.com/v1/me", {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
-      const data = await response.json();
-      setUser(data);
-      saveUserToFirestore(data);
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-    }
-  };
-
-  const saveUserToFirestore = async (userData) => {
-    try {
-      const userRef = doc(db, "spotify_users", userData.id);
-      await setDoc(userRef, userData, { merge: true });
-      console.log("User data saved to Firestore!");
-    } catch (error) {
-      console.error("Error saving user data:", error);
-    }
-  };
-
-  return { token, user };
+    return user.accessToken;
 };
 
-export default useSpotifyAuth;
+const refreshSpotifyToken = async (refresh_token) => {
+    const response = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: `Basic ${Buffer.from(`${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`).toString("base64")}`,
+        },
+        body: new URLSearchParams({
+            grant_type: "refresh_token",
+            refresh_token,
+        }),
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to refresh token");
+    }
+
+    return response.json();
+};
