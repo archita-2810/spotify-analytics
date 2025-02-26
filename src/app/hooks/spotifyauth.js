@@ -4,7 +4,7 @@ import User from "@/app/models/User";
 export const getSpotifyToken = async (userId) => {
     connectToMongo();
 
-    const user = await User.findOne({ spotifyId: userId });
+    const user = await User.findById(userId);
 
     if (!user) {
         throw new Error("User not found in MongoDB");

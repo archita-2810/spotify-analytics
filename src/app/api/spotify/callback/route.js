@@ -51,7 +51,7 @@ export async function GET(req) {
 
         connectToMongo();
 
-        await User.findOneAndUpdate(
+        const user = await User.findOneAndUpdate(
             { spotifyId: userData.id },
             {
                 displayName: userData.display_name,
@@ -67,7 +67,10 @@ export async function GET(req) {
         const response = NextResponse.redirect(new URL("/", req.url));
         response.headers.set(
             "Set-Cookie",
-            `spotify_access_token=${access_token}; HttpOnly; Secure; Path=/; Max-Age=${expires_in}`
+            [
+                `spotify_access_token=${access_token}; HttpOnly; Secure; Path=/; Max-Age=${expires_in}`,
+                `userId=${user._id.toString()}; HttpOnly; Secure; Path=/; Max-Age=${expires_in}`,
+            ].join("; ")
         );
 
         return response;

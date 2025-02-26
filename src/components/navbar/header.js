@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import User from "@/app/models/User";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,15 +12,17 @@ const Header = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch("/api/users");
+        const response = await fetch("/api/users", { credentials: "include" });
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
         }
 
         const data = await response.json();
-        if (data && data.userId) {
-          const token = await getSpotifyToken(data.userId);
-          setUser({ ...data, token });
+        if (data?.spotifyId) {
+          // const token = await getSpotifyToken(data.spotifyId);
+          setUser(data?.spotifyId ? { ...data, token: await getSpotifyToken(data.spotifyId) } : null);
+        } else {
+          setUser(null);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);

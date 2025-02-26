@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectToMongo from "@/app/lib/mongodb";
 import User from "@/app/models/User";
+import { cookies } from "next/headers";
 
 export async function GET(req) {
   try {
@@ -27,12 +28,6 @@ export async function POST(req) {
       await req.json();
 
     let user = await User.findOne({ spotifyId });
-    cookies().set("userId", user._id.toString(), {
-      httpOnly: true,
-      path: "/",
-      sameSite: "Strict",
-    });
-
     if (!user) {
       user = new User({
         spotifyId,
@@ -46,6 +41,15 @@ export async function POST(req) {
       user.accessToken = accessToken;
       await user.save();
     }
+
+    const userIdString = user._id.toString();
+    console.log("Setting userId cookie:", userIdString);
+
+    cookies().set("userId", userIdString, {
+      httpOnly: true,
+      path: "/",
+      sameSite: "Strict",
+    });
 
     return NextResponse.json({ message: "User saved", user }, { status: 201 });
   } catch (error) {
