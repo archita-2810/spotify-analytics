@@ -1,10 +1,17 @@
 import connectToMongo from "@/app/lib/mongodb";
 import User from "@/app/models/User";
+import mongoose from "mongoose";
 
 export const getSpotifyToken = async (userId) => {
-    connectToMongo();
+    await connectToMongo();
+    // console.log("Mongoose Models Before:", mongoose.connection.models);
 
-    const user = await User.findById(userId);
+    const newUser = User;
+
+    // console.log("Mongoose Models After:", mongoose.connection.models);
+    // console.log("Available Methods on User:", newUser.me);
+
+    const user = await newUser.findById(userId);
 
     if (!user) {
         throw new Error("User not found in MongoDB");

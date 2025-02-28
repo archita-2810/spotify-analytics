@@ -4,6 +4,8 @@ import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import User from "@/app/models/User";
+import { getSpotifyToken } from "@/app/hooks/spotifyauth";
+import Avatarimg from "../../../public/avatar-img.jpg"
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,15 +14,18 @@ const Header = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch("/api/users", { credentials: "include" });
+        const response = await fetch("/api/users");
         if (!response.ok) {
           throw new Error("Failed to fetch user data");
         }
 
         const data = await response.json();
-        if (data?.spotifyId) {
-          // const token = await getSpotifyToken(data.spotifyId);
-          setUser(data?.spotifyId ? { ...data, token: await getSpotifyToken(data.spotifyId) } : null);
+        console.log("data is being fetched", data); //here data is being fetched
+        // const userexists = data.spotifyId;
+        // console.log("yes user exists", userexists);
+        if (data && data.user.spotifyId) {
+          console.log("Yes, user exists:", data.user.spotifyId);
+          setUser({ ...data, token: await getSpotifyToken(data.user.spotifyId) });
         } else {
           setUser(null);
         }
@@ -74,7 +79,7 @@ const Header = () => {
       {user ? (
         <div className="flex items-center space-x-4">
           <Image
-            src={user?.photoURL || "/default-avatar.png"}
+            src={Avatarimg || user?.photoURL}
             alt="User Avatar"
             width={40}
             height={40}
